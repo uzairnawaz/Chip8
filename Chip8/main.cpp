@@ -35,10 +35,10 @@ int main(int argc, char* argv[])
     if (argc != 2 || (argc == 2 && strcmp(argv[1], "-help") == 0))
     {
         std::cout << "Syntax: Chip8 [rom file]\n";
-        //return 0;
+        return 0;
     }
     
-    if (!c8->loadROM("C:\\Users\\uzair\\Downloads\\roms\\chip8-test-rom-with-audio.ch8")) {//argv[1])) {
+    if (!c8->loadROM(argv[1])) {
         
         std::cout << "Error opening ROM file!";
         return -1;
