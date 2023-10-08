@@ -46,8 +46,6 @@ void Chip8::execute()
 	unsigned __int16 instruction = fetch();
 	program_counter += 2; // move pointer to the next instruction
 
-
-
 	switch (getHalfByte(instruction, 0))
 	{
 	case 0:
@@ -285,24 +283,31 @@ void Chip8::loadMemory(int lastRegister)
 
 void Chip8::displaySprite(unsigned __int16 instruction)
 {
-	int posx = registers[getHalfByte(instruction, 1)] % 64;
-	int posy = registers[getHalfByte(instruction, 2)] % 32;
-	int n = getHalfByte(instruction, 3);
-	bool flag = false;
-	for (int y = 0; y < n; y++)
+	// read sprite x, y positions from the specified registers
+	int posx = registers[getHalfByte(instruction, 1)] % SCREEN_WIDTH;
+	int posy = registers[getHalfByte(instruction, 2)] % SCREEN_HEIGHT;
+
+	int numRows = getHalfByte(instruction, 3);
+	// stores whether any pixels have been turned OFF as a result of displaying this sprite
+	bool flag = false; 
+	for (int y = 0; y < numRows; y++)
 	{
-		if (posy + y >= 32)
+		if (posy + y >= SCREEN_HEIGHT)
 		{
 			break;
 		}
+		// read one row of sprite data from memory
 		unsigned __int8 sprite_row = memory[idx_register + y];
 		for (int x = 0; x < 8; x++)
 		{
-			if (posx + x >= 64)
+			if (posx + x >= SCREEN_WIDTH)
 			{
 				break;
 			}
+			// get the value of the specific pixel from the sprite row data
 			bool sprite_pixel = (sprite_row & (1 << (7 - x))) >> (7 - x);
+
+			// if this sprite will cause the pixel to go from on -> off, set flag to true
 			flag |= (sprite_pixel == true && display[posy + y][posx + x] == true);
 			display[posy + y][posx + x] ^= sprite_pixel;
 		}
@@ -312,9 +317,9 @@ void Chip8::displaySprite(unsigned __int16 instruction)
 
 void Chip8::clearScreen()
 {
-	for (int y = 0; y < 32; y++)
+	for (int y = 0; y < SCREEN_HEIGHT; y++)
 	{
-		for (int x = 0; x < 64; x++)
+		for (int x = 0; x < SCREEN_WIDTH; x++)
 		{
 			display[y][x] = false;
 		}
@@ -323,26 +328,27 @@ void Chip8::clearScreen()
 
 unsigned __int8 Chip8::genRandomNumber()
 {
-	unsigned __int8 random = rand() % 256;
-	return random;
+	return rand() % 256;
 }
 
 bool Chip8::loadROM(std::string path)
 {
 	std::ifstream rom(path, std::ios::binary);
-	if (rom.is_open())
+	if (!rom.is_open())
 	{
-		int idx = 512;
-		while (rom)
-		{
-			memory[idx] = rom.get();
-			idx++;
-		}
-
-		rom.close();
-		return true;
+		return false;
 	}
-	return false;
+	
+	// load ROM into memory
+	int idx = 512;
+	while (rom)
+	{
+		memory[idx] = rom.get();
+		idx++;
+	}
+
+	rom.close();
+	return true;
 }
 
 bool Chip8::getPixel(int x, int y)

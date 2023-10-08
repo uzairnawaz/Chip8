@@ -21,9 +21,15 @@
     <ClCompile Include="Chip8.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="C8View.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Chip8.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C8View.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
