@@ -123,7 +123,7 @@ private:
 	/**
 	 * Process the display instruction
 	 * Params
-	 *   unsigned __int16 instruction - the display instruction
+     *   unsigned __int16 instruction - the display instruction
 	 */
 	void displaySprite(unsigned __int16 instruction);
 };
